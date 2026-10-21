@@ -1078,9 +1078,11 @@ function initPhotos() {
         playPhotoBloomChime();
     }
 
-    // Mở modal khi bấm vào ảnh và kích hoạt hoa nở bừng theo vòng tròn khắp màn hình
-    items.forEach(item => {
+    const polaroidList = document.getElementById('polaroid-list');
+
+    function bindPolaroidClick(item) {
         item.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-remove-polaroid')) return;
             triggerConcentricPhotoFlowerWave(item, e);
 
             const img = item.querySelector('.polaroid-img img');
@@ -1101,38 +1103,120 @@ function initPhotos() {
                 modal.classList.remove('hidden');
             }, 720);
         });
-    });
+    }
+
+    // Gắn sự kiện click xem modal cho tất cả ảnh hiện có
+    items.forEach(bindPolaroidClick);
 
     const closeModal = () => modal.classList.add('hidden');
     if (modalClose) modalClose.addEventListener('click', closeModal);
     if (modalBg) modalBg.addEventListener('click', closeModal);
 
-    // Upload ảnh thật
+    // Hàm tạo một khung ảnh polaroid mới kẹp lên dây treo
+    function createNewPolaroid(src, name, isCustom = false) {
+        const swingClasses = ['swing-a', 'swing-b', 'swing-c', 'swing-d', 'swing-e', 'swing-f'];
+        const randomSwing = swingClasses[Math.floor(Math.random() * swingClasses.length)];
+
+        const item = document.createElement('div');
+        item.className = `polaroid-item ${randomSwing} ${isCustom ? 'custom-polaroid' : ''}`;
+
+        const removeBtnHTML = isCustom ? `<button class="btn-remove-polaroid" title="Gỡ ảnh này khỏi dây">✕</button>` : '';
+
+        item.innerHTML = `
+            <div class="clip"></div>
+            ${removeBtnHTML}
+            <div class="polaroid">
+                <div class="polaroid-img">
+                    <img src="${src}" alt="${name}">
+                    <span class="p-tag">${name}</span>
+                </div>
+                <p class="p-caption">${name}</p>
+            </div>
+        `;
+
+        bindPolaroidClick(item);
+
+        if (isCustom) {
+            const removeBtn = item.querySelector('.btn-remove-polaroid');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    item.style.transform = 'scale(0.8) translateY(30px)';
+                    item.style.opacity = '0';
+                    item.style.transition = 'all 0.35s ease';
+                    setTimeout(() => {
+                        item.remove();
+                        saveCustomPhotos();
+                    }, 350);
+                });
+            }
+        }
+
+        return item;
+    }
+
+    // Lưu các ảnh người dùng treo thêm vào localStorage
+    function saveCustomPhotos() {
+        if (!polaroidList) return;
+        try {
+            const customs = Array.from(polaroidList.querySelectorAll('.custom-polaroid'));
+            const data = customs.map(it => ({
+                src: it.querySelector('img').src,
+                name: it.querySelector('.p-caption').textContent
+            }));
+            localStorage.setItem('tangcaune_custom_photos', JSON.stringify(data));
+        } catch (e) {
+            console.warn('LocalStorage limit reached or disabled', e);
+        }
+    }
+
+    // Khôi phục các ảnh người dùng đã treo thêm từ phiên trước
+    function loadCustomPhotos() {
+        if (!polaroidList) return;
+        try {
+            const raw = localStorage.getItem('tangcaune_custom_photos');
+            if (!raw) return;
+            const data = JSON.parse(raw);
+            if (Array.isArray(data)) {
+                data.forEach(p => {
+                    const el = createNewPolaroid(p.src, p.name, true);
+                    polaroidList.appendChild(el);
+                });
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    loadCustomPhotos();
+
+    // Upload & treo thêm ảnh thật lên dây
     if (uploadInput) {
         uploadInput.addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
-            files.forEach((file, i) => {
-                if (i >= items.length) return;
+            if (!files.length) return;
+
+            files.forEach(file => {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    const imgBox = items[i].querySelector('.polaroid-img');
                     let photoName = file.name.replace(/\.[^/.]+$/, "");
                     const match = photoName.match(/(?:gắn với tag|ảnh với tag|ảnh gắn với tag)\s*(.+)/i);
                     if (match) photoName = match[1].trim();
                     photoName = photoName.replace(/=\)+/g, '').trim();
                     if (/^màu\s*vàng/i.test(photoName)) photoName = 'Vàng';
+                    if (!photoName) photoName = 'Ảnh kỷ niệm ✨';
 
-                    if (imgBox) {
-                        imgBox.innerHTML = `
-                            <img src="${event.target.result}" alt="${photoName}">
-                            <span class="p-tag">${photoName}</span>
-                        `;
+                    if (polaroidList) {
+                        const newEl = createNewPolaroid(event.target.result, photoName, true);
+                        polaroidList.appendChild(newEl);
+                        saveCustomPhotos();
+                        newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        triggerConcentricPhotoFlowerWave(newEl);
                     }
-                    const caption = items[i].querySelector('.p-caption');
-                    if (caption) caption.textContent = photoName;
                 };
                 reader.readAsDataURL(file);
             });
+            uploadInput.value = '';
         });
     }
 
