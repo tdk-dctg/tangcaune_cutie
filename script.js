@@ -804,10 +804,13 @@ function initTulipMeadow() {
     midTulips.forEach(opt => layerMid.appendChild(createTulipElement(opt)));
     frontTulips.forEach(opt => layerFront.appendChild(createTulipElement(opt)));
 
-    // Kích hoạt chuỗi bung nở toàn vườn hoa khắp màn hình từ đầu
-    setTimeout(() => {
-        replayFlowerBloom();
-    }, 300);
+    // Kích hoạt chuỗi bung nở toàn vườn hoa (chờ chạm mở quà nếu có màn overlay)
+    const giftOverlay = document.getElementById('gift-intro-overlay');
+    if (!giftOverlay) {
+        setTimeout(() => {
+            replayFlowerBloom();
+        }, 300);
+    }
 
     // Nút mở bức thư (chuyển sang stage 2)
     if (btnToMailbox) {
@@ -1149,9 +1152,48 @@ function initGentlePetals() {
     // background giữ tĩnh thanh lịch, tập trung 100% ánh nhìn vào vẻ đẹp vườn hoa tulip!
 }
 
+// ==========================================================================
+// 0. MÀN MỞ QUÀ BÍ MẬT 21/10 (GIFT INTRO CONTROLLER)
+// ==========================================================================
+function initGiftIntro(audioCtrl) {
+    const overlay = document.getElementById('gift-intro-overlay');
+    const openBtn = document.getElementById('btn-open-gift');
+    const boxVisual = document.getElementById('gift-box-visual');
+    const card = document.getElementById('gift-intro-card');
+
+    if (!overlay) return;
+
+    let isOpened = false;
+
+    function handleOpenGift() {
+        if (isOpened) return;
+        isOpened = true;
+
+        // 1. Kích hoạt phát nhạc bài 1 ngay lập tức qua user gesture
+        if (audioCtrl) {
+            audioCtrl.playTrack(0);
+        }
+
+        // 2. Kích hoạt toàn bộ vườn hoa tulip bung nở từ đất lên trời
+        replayFlowerBloom();
+
+        // 3. Hiệu ứng mở bung hộp quà & fade-out màn che phủ
+        overlay.classList.add('opened');
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 700);
+    }
+
+    if (openBtn) openBtn.addEventListener('click', handleOpenGift);
+    if (boxVisual) boxVisual.addEventListener('click', handleOpenGift);
+    if (card) card.addEventListener('click', handleOpenGift);
+    overlay.addEventListener('click', handleOpenGift);
+}
+
 // Khởi chạy khi DOM sẵn sàng
 document.addEventListener('DOMContentLoaded', () => {
-    new AudioPlaylistController();
+    const audioCtrl = new AudioPlaylistController();
+    initGiftIntro(audioCtrl);
     initCursorTrail();
     initTulipMeadow();
     initMailbox();

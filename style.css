@@ -551,29 +551,203 @@ body {
     background: #ffd54f;
 }
 
-/* Autoplay Prompt */
-.music-start-prompt {
+/* ==========================================================================
+   MÀN MỞ QUÀ BÍ MẬT 21/10 (GIFT INTRO OVERLAY)
+   ========================================================================== */
+.gift-intro-overlay {
     position: fixed;
-    top: 135px;
-    right: 20px;
-    z-index: 9999;
-    background: #ffffff;
-    border: 2px dashed var(--gold);
-    padding: 9px 18px;
-    border-radius: 25px;
-    box-shadow: 0 6px 20px rgba(245, 176, 38, 0.3);
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--gold-dark);
-    cursor: pointer;
-    animation: bounceSlow 2s infinite ease-in-out;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, rgba(255, 253, 245, 0.96) 0%, rgba(254, 242, 214, 0.94) 60%, rgba(253, 230, 138, 0.92) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.65s ease;
+    padding: 20px;
 }
 
-.music-start-prompt.fade-out {
+.gift-intro-overlay.opened {
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transform: translateY(-10px);
+    transform: scale(1.08);
+}
+
+.gift-intro-card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 36px 30px 28px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    border: 2px solid rgba(245, 176, 38, 0.55);
+    box-shadow: 0 25px 60px rgba(245, 176, 38, 0.35), 0 10px 25px rgba(0, 0, 0, 0.08);
+    animation: giftCardFloat 3.6s infinite ease-in-out;
+}
+
+@keyframes giftCardFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+}
+
+.gift-badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--gold-dark);
+    background: #fff8e1;
+    border: 1px solid var(--gold);
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+}
+
+/* 3D Gift Box Graphic */
+.gift-box-visual {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 16px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gift-box-visual:hover {
+    transform: scale(1.1) rotate(-3deg);
+}
+
+.gift-box-lid {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    width: 80px;
+    height: 20px;
+    background: linear-gradient(135deg, #ffd54f 0%, #f5b026 100%);
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(245, 176, 38, 0.4);
+    z-index: 3;
+    border: 2px solid #ffffff;
+}
+
+.gift-box-body {
+    position: absolute;
+    bottom: 4px;
+    left: 10px;
+    width: 70px;
+    height: 58px;
+    background: linear-gradient(135deg, #f5b026 0%, #e65100 100%);
+    border-radius: 6px 6px 12px 12px;
+    box-shadow: 0 10px 24px rgba(230, 81, 0, 0.35);
+    z-index: 2;
+    overflow: hidden;
+    border: 2px solid #ffffff;
+}
+
+.gift-ribbon-v {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    transform: translateX(-50%);
+    background: #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+.gift-ribbon-h {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 14px;
+    transform: translateY(-50%);
+    background: #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+.gift-bow {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.2rem;
+    z-index: 4;
+    animation: bowWiggle 2.2s infinite ease-in-out;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+@keyframes bowWiggle {
+    0%, 100% { transform: translateX(-50%) rotate(0deg); }
+    25% { transform: translateX(-50%) rotate(-7deg); }
+    75% { transform: translateX(-50%) rotate(7deg); }
+}
+
+.gift-sparkle {
+    position: absolute;
+    font-size: 1.15rem;
+    pointer-events: none;
+    animation: sparkleBlink 2s infinite ease-in-out alternate;
+}
+
+.sp-1 { top: -4px; left: -10px; animation-delay: 0s; }
+.sp-2 { top: 12px; right: -12px; animation-delay: 0.5s; font-size: 1.3rem; }
+.sp-3 { bottom: 0; left: -8px; animation-delay: 1s; }
+.sp-4 { bottom: -6px; right: -8px; animation-delay: 1.5s; }
+
+@keyframes sparkleBlink {
+    0% { transform: scale(0.7) rotate(0deg); opacity: 0.4; }
+    100% { transform: scale(1.2) rotate(20deg); opacity: 1; }
+}
+
+.gift-title {
+    font-family: var(--font-hand);
+    font-size: 2.6rem;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    line-height: 1.1;
+}
+
+.gift-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    line-height: 1.45;
+}
+
+.btn-open-gift {
+    width: 100%;
+    background: linear-gradient(135deg, #f5b026 0%, #e65100 100%);
+    color: #ffffff;
+    border: none;
+    padding: 13px 22px;
+    border-radius: 30px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(230, 81, 0, 0.38), 0 0 0 2px rgba(255, 255, 255, 0.8);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: btnGlow 2.4s infinite ease-in-out;
+}
+
+.btn-open-gift:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(230, 81, 0, 0.5), 0 0 0 3px #ffffff;
+}
+
+@keyframes btnGlow {
+    0%, 100% { box-shadow: 0 8px 24px rgba(230, 81, 0, 0.38); }
+    50% { box-shadow: 0 10px 30px rgba(245, 176, 38, 0.65), 0 0 18px rgba(245, 176, 38, 0.4); }
+}
+
+.gift-hint-sub {
+    font-size: 0.8rem;
+    color: #b86800;
+    margin-top: 10px;
+    font-weight: 600;
 }
 
 @media (max-width: 600px) {
