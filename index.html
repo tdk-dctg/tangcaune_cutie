@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chúc mừng ngày 21/10 — Món quà tặng TQZ from tdk với vườn hoa nở của nhà thơ trồng, lá thư xinh xắn và góc ảnh treo đung đưa">
+    <title>🌷 Chúc Mừng Ngày 21/10 — Tặng TQZ From TDK 🌷</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Cursor Trail Container (GPU Accelerated, Zero Lag) -->
+    <div id="cursor-trail-layer" class="cursor-trail-layer"></div>
+
+    <!-- Prominent Dynamic Island Audio Player Widget (Top-Right) -->
+    <div class="audio-player-card expanded" id="audio-player-card">
+        <!-- Mini Dynamic Island Capsule (Khi thu nhỏ) -->
+        <div class="audio-island-pill" id="audio-island-pill" title="Chạm hoặc rê chuột để mở góc âm nhạc!">
+            <div class="island-disc-mini" id="island-disc-mini">🌷</div>
+            <div class="island-info">
+                <span class="island-title" id="island-title">1. Ờ Lờ Waay</span>
+            </div>
+            <div class="island-wave">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+
+        <!-- Full Expanded Card Inner (Khi phóng to) -->
+        <div class="audio-card-inner" id="audio-card-inner">
+            <div class="audio-vinyl-wrap">
+                <div class="audio-disc" id="audio-disc" title="Bấm vào đĩa để Bật / Tắt nhạc">
+                    <span class="disc-groove"></span>
+                    <span class="disc-center">🌷</span>
+                </div>
+            </div>
+            <div class="audio-body">
+                <div class="audio-meta">
+                    <div class="audio-soundwaves" id="audio-soundwaves">
+                        <span class="wave-bar bar-1"></span>
+                        <span class="wave-bar bar-2"></span>
+                        <span class="wave-bar bar-3"></span>
+                        <span class="wave-bar bar-4"></span>
+                    </div>
+                    <span class="audio-badge">🎵 GÓC ÂM NHẠC 21/10</span>
+                </div>
+                <h4 class="audio-title" id="audio-title">1. Ờ Lờ Waay 🌷</h4>
+                <p class="audio-subtitle">Nhạc nền tặng TQZ from tdk ✨</p>
+                <div class="audio-controls-row">
+                    <button class="audio-btn btn-prev" id="audio-prev-btn" title="Bài trước">⏮</button>
+                    <button class="audio-play-main" id="audio-play-btn" title="Phát / Dừng">
+                        <span class="play-icon" id="play-icon">▶</span>
+                    </button>
+                    <button class="audio-btn btn-next" id="audio-next-btn" title="Bài tiếp theo">⏭</button>
+                    <button class="audio-btn btn-playlist" id="audio-playlist-btn" title="Mở danh sách bài hát">
+                        📋 Playlist
+                    </button>
+                    <label for="custom-audio-file" class="audio-upload-btn" title="Chọn file nhạc từ máy của bạn">
+                        📁 Đổi bài
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropdown Playlist Menu -->
+        <div class="audio-playlist-drawer hidden" id="audio-playlist-drawer">
+            <div class="playlist-header">
+                <span class="playlist-heading">🎵 Playlist Bài Hát (4)</span>
+                <button class="playlist-close-btn" id="playlist-close-btn" title="Đóng danh sách">✕</button>
+            </div>
+            <div class="playlist-items-list" id="playlist-items-list"></div>
+        </div>
+        <!-- Bouncy Big Hint Tag inviting click -->
+        <div class="audio-card-hint" id="audio-card-hint" title="Bấm vào đây để chuyển bài hát nhanh!">
+            <span>👉 Bấm vào đây để chuyển nhạc các kiểu =)) 🎶</span>
+        </div>
+        <input type="file" id="custom-audio-file" accept="audio/*" style="display:none">
+        <audio id="real-audio-element" src="track1_always.ogg" autoplay preload="auto"></audio>
+    </div>
+
+    <!-- First Click Prompt (Autoplay Helper) -->
+    <div class="music-start-prompt" id="music-start-prompt">
+        <span>🎵 Chạm vào bất kỳ đâu để bật nhạc & ngắm cả vườn hoa bung nở nhé! ✨</span>
+    </div>
+
+    <!-- Background Petals Layer -->
+    <div class="petals-container" id="petals-container"></div>
+
+    <!-- ==============================================
+         LIVING BLOOMING TULIP GARDEN BACKGROUND (FULL SCREEN)
+         ============================================== -->
+    <div class="tulip-meadow-wrap" id="tulip-meadow-wrap">
+        <!-- Lớp hoa trên cao & vòm trời (Sky & Canopy layer) -->
+        <div class="meadow-layer layer-canopy" id="meadow-canopy"></div>
+
+        <!-- Lớp hoa nền vươn cao (Background layer - vươn tới 70-85% chiều cao màn hình) -->
+        <div class="meadow-layer layer-back" id="meadow-back"></div>
+
+        <!-- Lớp hoa chính giữa (Midground layer - vươn 40-60% chiều cao màn hình) -->
+        <div class="meadow-layer layer-mid" id="meadow-mid"></div>
+
+        <!-- Lớp hoa tiền cảnh (Foreground layer - to & rực rỡ ở chân) -->
+        <div class="meadow-layer layer-front" id="meadow-front"></div>
+
+        <!-- Đồi cỏ lượn sóng mềm mại -->
+        <div class="grass-hill hill-back"></div>
+        <div class="grass-hill hill-front"></div>
+    </div>
+
+    <!-- ==============================================
+         STAGE 1: MỞ ĐẦU VƯỜN HOA TULIP NỞ RỘ
+         ============================================== -->
+    <section class="stage stage-garden active" id="stage-garden">
+        <!-- Sun & Sky Aura -->
+        <div class="garden-sun"></div>
+        <div class="sun-flare"></div>
+
+        <!-- Header Content (Ban đầu ẩn để ngắm trọn hoa nở từ đất lên trời) -->
+        <div class="garden-header hidden-during-bloom">
+            <span class="badge-2010">✨ CHÚC MỪNG NGÀY 21/10 — TẶNG TQZ FROM TDK ✨</span>
+            <h1 class="garden-title">Vườn hoa nở của nhà thơ trồng</h1>
+            <p class="garden-subtitle" id="garden-subtitle">Một bầu trời hoa tulip vàng rạng rỡ đang bung nở tặng TQZ from tdk... ✨</p>
+            <div class="garden-actions">
+                <button class="btn-primary" id="btn-to-mailbox">
+                    Mở Bức Thư 21/10 💌
+                </button>
+                <button class="btn-outline btn-replay" id="btn-replay-bloom" title="Xem lại cảnh vườn hoa nở từ đầu">
+                    🌸 Ngắm Lại Hoa Nở
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==============================================
+         STAGE 2: BỨC THƯ TAY XINH & LỜI CHÚC TYPEWRITER
+         ============================================== -->
+    <section class="stage stage-mailbox" id="stage-mailbox">
+        <div class="mailbox-header">
+            <h2 class="stage-title">Gửi tqz</h2>
+            <p class="stage-subtitle">chạm vào lá thư để mở</p>
+        </div>
+
+        <div class="envelope-container" id="envelope-container">
+            <!-- 3D Letter Envelope Graphic -->
+            <div class="letter-envelope" id="envelope-box" title="Bấm vào lá thư để mở lời chúc!">
+                <div class="envelope-back"></div>
+                <div class="envelope-paper-preview">
+                    <div class="preview-line"></div>
+                    <div class="preview-line short"></div>
+                    <span class="preview-seal-heart">🌷</span>
+                </div>
+                <div class="envelope-front"></div>
+                <div class="envelope-flap" id="envelope-flap"></div>
+                <div class="wax-seal" id="wax-seal">
+                    <span class="seal-icon">🌷</span>
+                </div>
+                <div class="envelope-tag">
+                    <span>Tặng TQZ from tdk 21/10</span>
+                </div>
+            </div>
+
+            <p class="envelope-tip" id="envelope-tip">👆 Chạm vào lá thư để mở ✨</p>
+            <div class="mailbox-actions hidden" id="mailbox-actions" style="margin-top: 15px;">
+                <button class="btn-primary" id="btn-mailbox-to-photos">
+                    Xem Góc Ảnh Đung Đưa 📸 →
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popup Letter Card (Đặt ở cấp body để mở trực tiếp từ bông hoa hoặc hòm thư) -->
+    <div class="letter-overlay hidden" id="letter-overlay">
+        <div class="letter-card" id="letter-card">
+            <button class="letter-close-btn" id="letter-close-btn" title="Đóng bức thư">✕</button>
+            <div class="letter-top">
+                <span class="letter-icon">🌷</span>
+                <h3 class="letter-dear">Hẹ hẹ hẹ =)) 🌷</h3>
+                <span class="letter-icon">🌷</span>
+            </div>
+            <div class="letter-line"><span>❀ ❀ ❀</span></div>
+            
+            <!-- Typewriter message -->
+            <div class="letter-content" id="letter-content">
+                <span id="typewriter-text"></span>
+                <span class="cursor" id="typewriter-cursor">|</span>
+            </div>
+
+            <!-- Stickers cute thay thế cho đoạn chữ cũ -->
+            <div class="letter-stickers-wrap">
+                <div class="stickers-intro-row">
+                    <span class="stickers-title">✨ Bộ sticker cute tặng TQZ from tdk:</span>
+                    <span class="letter-date">21 / 10</span>
+                </div>
+                <div class="stickers-row" id="stickers-row">
+                    <div class="sticker-item" title="Sticker: Đạt aim (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_dataim.jpg" alt="Đạt aim">
+                        </div>
+                        <span class="st-caption">Đạt aim</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Cutie (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_cutie.jpg" alt="Cutie">
+                        </div>
+                        <span class="st-caption">Cutie</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Vàng (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_mauvang.jpg" alt="Vàng">
+                        </div>
+                        <span class="st-caption">Vàng</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Vstra (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_vstra.jpg" alt="Vstra">
+                        </div>
+                        <span class="st-caption">Vstra</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Cute (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_cute.jpg" alt="Cute">
+                        </div>
+                        <span class="st-caption">Cute</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Chuột (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_chuot.jpg" alt="Chuột">
+                        </div>
+                        <span class="st-caption">Chuột</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Khó nói (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_khonoi.jpg" alt="Khó nói">
+                        </div>
+                        <span class="st-caption">Khó nói</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Vui vẻ (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_vuive.jpg" alt="Vui vẻ">
+                        </div>
+                        <span class="st-caption">Vui vẻ</span>
+                    </div>
+                    <div class="sticker-item" title="Sticker: Đoàn viên (Bấm để nhún nhảy nè!)">
+                        <div class="sticker-photo-crop">
+                            <img src="assets/stickers/stk_doanvien.jpg" alt="Đoàn viên">
+                        </div>
+                        <span class="st-caption">Đoàn viên</span>
+                    </div>
+                </div>
+
+                <!-- Tải ảnh thật của bạn để cắt thành sticker tròn viền trắng dán trực tiếp vào thư -->
+                <div class="sticker-upload-container">
+                    <label for="input-custom-sticker" class="btn-sticker-upload" title="Bấm để chọn ảnh từ máy cắt thành sticker dán vào thư">
+                        📸 + Dán sticker từ ảnh của tôi
+                    </label>
+                    <input type="file" id="input-custom-sticker" accept="image/*" multiple style="display:none">
+                    <span class="sticker-hint">Chọn ảnh từ máy để tự động cắt thành sticker viền trắng dán vào thư siêu xinh!</span>
+                </div>
+            </div>
+
+            <div class="letter-actions">
+                <button class="btn-primary" id="btn-to-photos">
+                    Xem Góc Ảnh Đung Đưa 📸 →
+                </button>
+                <button class="btn-outline btn-replay-letter" id="btn-replay-from-letter" title="Ngắm lại vườn hoa nở rộ từ đầu">
+                    🌸 Ngắm Lại Hoa Nở
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         STAGE 3: HÀNG ẢNH ĐUNG ĐƯA
+         ============================================== -->
+    <section class="stage stage-photos" id="stage-photos">
+        <div class="photos-header">
+            <span class="badge-2010">🌷 Tặng TQZ 🌷</span>
+            <h2 class="stage-title">Góc ảnh treo này mình lấy từ trong đoạn chat =))</h2>
+            <p class="stage-subtitle">Chạm ảnh để thấy rõ hơn nhó</p>
+        </div>
+
+        <div class="gallery-wrapper">
+            <!-- Dây treo ảnh với dải đèn LED đom đóm & dải hoa lá nguyệt quế -->
+            <div class="clothesline">
+                <div class="wire"></div>
+                <div class="laurel-garland" id="laurel-garland"></div>
+                <div class="fairy-lights-row" id="fairy-lights-row"></div>
+            </div>
+
+            <!-- Các khung ảnh đung đưa -->
+            <div class="polaroid-list" id="polaroid-list">
+                <!-- Ảnh 1 -->
+                <div class="polaroid-item swing-a">
+                    <div class="clip"></div>
+                    <div class="polaroid">
+                        <div class="polaroid-img">
+                            <img src="assets/photos/pht_tranghonma.jpg" alt="trắng hơn maa" style="object-position: center 20%;">
+                            <span class="p-tag">trắng hơn maa</span>
+                        </div>
+                        <p class="p-caption">trắng hơn maa</p>
+                    </div>
+                </div>
+
+                <!-- Ảnh 2 -->
+                <div class="polaroid-item swing-b">
+                    <div class="clip"></div>
+                    <div class="polaroid">
+                        <div class="polaroid-img">
+                            <img src="assets/photos/pht_biboi.jpg" alt="bi boi công nghệ" style="object-position: center 20%;">
+                            <span class="p-tag">bi boi công nghệ</span>
+                        </div>
+                        <p class="p-caption">bi boi công nghệ</p>
+                    </div>
+                </div>
+
+                <!-- Ảnh 3 -->
+                <div class="polaroid-item swing-c">
+                    <div class="clip"></div>
+                    <div class="polaroid">
+                        <div class="polaroid-img">
+                            <img src="assets/photos/pht_khongbiet.jpg" alt="không biết" style="object-position: center 20%;">
+                            <span class="p-tag">không biết</span>
+                        </div>
+                        <p class="p-caption">không biết</p>
+                    </div>
+                </div>
+
+                <!-- Ảnh 4 -->
+                <div class="polaroid-item swing-d">
+                    <div class="clip"></div>
+                    <div class="polaroid">
+                        <div class="polaroid-img">
+                            <img src="assets/photos/pht_mck.jpg" alt="mckkkk" style="object-position: center 15%;">
+                            <span class="p-tag">mckkkk</span>
+                        </div>
+                        <p class="p-caption">mckkkk</p>
+                    </div>
+                </div>
+
+                <!-- Ảnh 5 -->
+                <div class="polaroid-item swing-e">
+                    <div class="clip"></div>
+                    <div class="polaroid">
+                        <div class="polaroid-img">
+                            <img src="assets/photos/pht_random.jpg" alt="random" style="object-position: center center;">
+                            <span class="p-tag">random</span>
+                        </div>
+                        <p class="p-caption">random</p>
+                    </div>
+                </div>
+
+                <!-- Ảnh 6 -->
+                <div class="polaroid-item swing-f">
+                    <div class="clip"></div>
+                    <div class="polaroid">
+                        <div class="polaroid-img">
+                            <img src="assets/photos/pht_coay.jpg" alt="ảnh rất là cô ấy" style="object-position: center 18%;">
+                            <span class="p-tag">ảnh rất là cô ấy</span>
+                        </div>
+                        <p class="p-caption">ảnh rất là cô ấy</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tùy chọn thay ảnh thật -->
+            <div class="photo-upload-box">
+                <p>💡 <em>Bạn có thể chọn ảnh từ máy tính để treo lên dây ngay:</em></p>
+                <label for="input-custom-photos" class="btn-upload">
+                    📷 Chọn Thêm Ảnh Để Treo Lên Dây
+                </label>
+                <input type="file" id="input-custom-photos" accept="image/*" multiple style="display:none">
+            </div>
+
+            <!-- Nút điều hướng quay lại -->
+            <div class="nav-bottom-actions">
+                <button class="btn-outline" id="btn-back-to-garden">
+                    🌷 Ngắm Lại Vườn Hoa
+                </button>
+                <button class="btn-outline" id="btn-back-to-mailbox">
+                    💌 Đọc Lại Bức Thư
+                </button>
+            </div>
+        </div>
+
+        <footer class="page-footer">
+            <p>🌷 Chúc mừng ngày 21/10 — Tặng <strong>TQZ</strong> from <strong>tdk</strong> ✨</p>
+        </footer>
+    </section>
+
+    <!-- Modal xem ảnh lớn với hiệu ứng hoa nở quanh khung ảnh -->
+    <div class="image-modal hidden" id="image-modal">
+        <div class="image-modal-bg" id="image-modal-bg"></div>
+        <div class="image-modal-box" id="image-modal-box">
+            <!-- 4 Góc hoa tulip nở bừng khi mở ảnh -->
+            <div class="modal-floral-corner corner-tl">🌷</div>
+            <div class="modal-floral-corner corner-tr">🌷</div>
+            <div class="modal-floral-corner corner-bl">🌷</div>
+            <div class="modal-floral-corner corner-br">🌷</div>
+            <button class="modal-close-btn" id="modal-close-btn" title="Đóng ảnh">✕</button>
+            <div class="modal-img-wrap" id="modal-img-wrap"></div>
+            <p class="modal-caption" id="modal-caption"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

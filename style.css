@@ -1,0 +1,2210 @@
+/* ==========================================================================
+   21/10 FOR TQZ — FULL-SCREEN TULIP GARDEN & LIGHTWEIGHT CURSOR TRAIL
+   ========================================================================== */
+
+:root {
+    /* Warm Yellow Tulip Palette */
+    --gold: #f5b026;
+    --gold-dark: #b86800;
+    --yellow-pastel: #fff9e6;
+    --yellow-soft: #fff3c4;
+    --yellow-bright: #ffd54f;
+    --cream: #fffdf7;
+    --green-stem: #66bb6a;
+    --green-leaf: #81c784;
+    --green-dark: #388e3c;
+    --text-dark: #3e2723;
+    --text-medium: #5d4037;
+    --text-muted: #8d6e63;
+    --white: #ffffff;
+
+    /* Fonts */
+    --font-hand: 'Dancing Script', cursive;
+    --font-body: 'Quicksand', sans-serif;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: linear-gradient(175deg, #fffdf8 0%, #fff9e6 45%, #fff3cd 80%, #ffeaa7 100%);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   DYNAMIC ISLAND AUDIO PLAYER WIDGET (TOP-RIGHT)
+   ========================================================================== */
+.audio-player-card {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 1. Mini Dynamic Island Capsule (Collapsed State) */
+.audio-island-pill {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: rgba(22, 22, 22, 0.96);
+    border: 2px solid var(--gold);
+    border-radius: 30px;
+    padding: 5px 14px 5px 6px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 0 16px rgba(245, 176, 38, 0.4);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
+.audio-island-pill:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 30px rgba(245, 176, 38, 0.6);
+}
+
+.island-disc-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #2b2b2b 0%, #111111 75%, #000000 100%);
+    border: 2px solid #ffd54f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.audio-player-card.playing .island-disc-mini {
+    animation: spinVinyl 3.5s linear infinite;
+}
+
+.island-info {
+    max-width: 135px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.island-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #ffe082;
+    letter-spacing: 0.2px;
+}
+
+.island-wave {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 12px;
+}
+
+.island-wave span {
+    width: 2.5px;
+    height: 100%;
+    background: #ffd54f;
+    border-radius: 1px;
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+}
+
+.audio-player-card.playing .island-wave span:nth-child(1) { animation: soundWave 0.6s infinite alternate ease-in-out; }
+.audio-player-card.playing .island-wave span:nth-child(2) { animation: soundWave 0.4s infinite alternate ease-in-out 0.15s; }
+.audio-player-card.playing .island-wave span:nth-child(3) { animation: soundWave 0.7s infinite alternate ease-in-out 0.3s; }
+
+/* 2. Full Expanded Player Card Inner */
+.audio-card-inner {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 2.5px solid var(--gold);
+    border-radius: 24px;
+    padding: 12px 20px;
+    box-shadow: 0 12px 35px rgba(245, 176, 38, 0.38), 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Expansion Trigger: When hovered or has .expanded class */
+.audio-player-card.expanded .audio-island-pill,
+.audio-player-card:hover .audio-island-pill {
+    display: none;
+}
+
+.audio-player-card.expanded .audio-card-inner,
+.audio-player-card:hover .audio-card-inner {
+    display: flex;
+    animation: expandCard 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.audio-player-card.expanded .audio-card-hint,
+.audio-player-card:hover .audio-card-hint {
+    display: block;
+    animation: hintWiggle 2s infinite ease-in-out;
+}
+
+@keyframes expandCard {
+    from {
+        opacity: 0;
+        transform: scale(0.88) translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Vinyl Disc in Full View */
+.audio-vinyl-wrap {
+    position: relative;
+    cursor: pointer;
+}
+
+.audio-disc {
+    width: 54px;
+    height: 54px;
+    background: radial-gradient(circle, #2b2b2b 0%, #151515 70%, #000000 100%);
+    border-radius: 50%;
+    border: 3.5px solid #f5b026;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.audio-player-card.playing .audio-disc {
+    animation: spinVinyl 3.5s linear infinite;
+}
+
+@keyframes spinVinyl {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.disc-center {
+    font-size: 1.3rem;
+    line-height: 1;
+    z-index: 2;
+}
+
+.disc-groove {
+    position: absolute;
+    inset: 7px;
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+}
+
+/* Audio Body */
+.audio-body {
+    text-align: left;
+}
+
+.audio-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+}
+
+.audio-soundwaves {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 14px;
+}
+
+.wave-bar {
+    width: 3.5px;
+    height: 100%;
+    background: var(--gold-dark);
+    border-radius: 2px;
+    transform-origin: bottom;
+    transform: scaleY(0.2);
+}
+
+.audio-player-card.playing .bar-1 { animation: soundWave 0.7s infinite alternate ease-in-out; }
+.audio-player-card.playing .bar-2 { animation: soundWave 0.5s infinite alternate ease-in-out 0.2s; }
+.audio-player-card.playing .bar-3 { animation: soundWave 0.8s infinite alternate ease-in-out 0.1s; }
+.audio-player-card.playing .bar-4 { animation: soundWave 0.6s infinite alternate ease-in-out 0.3s; }
+
+@keyframes soundWave {
+    0% { transform: scaleY(0.25); }
+    100% { transform: scaleY(1); }
+}
+
+.audio-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--gold-dark);
+    letter-spacing: 0.5px;
+}
+
+.audio-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    white-space: nowrap;
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.audio-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+/* Controls */
+.audio-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.audio-btn {
+    background: #fff8e1;
+    border: 1.5px solid var(--gold);
+    color: var(--gold-dark);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.audio-btn:hover {
+    background: var(--gold);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(245, 176, 38, 0.3);
+}
+
+.btn-playlist {
+    background: #fff8e1;
+    border: 1.5px solid var(--gold);
+    color: var(--gold-dark);
+}
+
+.btn-playlist.active, .btn-playlist:hover {
+    background: linear-gradient(135deg, #ffd54f 0%, #f5b026 100%);
+    color: #4a2800;
+    border-color: var(--gold-dark);
+    box-shadow: 0 3px 8px rgba(245, 176, 38, 0.4);
+}
+
+/* Dropdown Playlist Menu Drawer */
+.audio-playlist-drawer {
+    margin-top: 10px;
+    width: 320px;
+    max-width: 90vw;
+    background: rgba(255, 255, 255, 0.98);
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    padding: 14px 16px;
+    box-shadow: 0 14px 35px rgba(245, 176, 38, 0.35), 0 4px 15px rgba(0, 0, 0, 0.08);
+    transform-origin: top right;
+    animation: drawerSlide 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+    backdrop-filter: blur(12px);
+}
+
+.audio-playlist-drawer.hidden {
+    display: none !important;
+}
+
+@keyframes drawerSlide {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.playlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1.5px solid rgba(245, 176, 38, 0.25);
+}
+
+.playlist-heading {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--gold-dark);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.playlist-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.playlist-close-btn:hover {
+    color: var(--text-dark);
+    background: rgba(245, 176, 38, 0.15);
+}
+
+.playlist-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.playlist-items-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.playlist-items-list::-webkit-scrollbar-thumb {
+    background: rgba(245, 176, 38, 0.4);
+    border-radius: 4px;
+}
+
+.playlist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1.5px solid transparent;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.playlist-item:hover {
+    background: #fff8e1;
+    border-color: rgba(245, 176, 38, 0.45);
+    transform: translateX(-2px);
+}
+
+.playlist-item.active {
+    background: linear-gradient(135deg, #fff3c4 0%, #ffd54f 100%);
+    border-color: var(--gold-dark);
+    box-shadow: 0 3px 10px rgba(245, 176, 38, 0.35);
+}
+
+.playlist-item-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.playlist-item-icon {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.playlist-item-title {
+    font-size: 0.88rem;
+    color: var(--text-dark);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.playlist-item.active .playlist-item-title {
+    font-weight: 800;
+    color: #4a2800;
+}
+
+.playlist-playing-indicator {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 12px;
+    flex-shrink: 0;
+}
+
+.indicator-bar {
+    display: inline-block;
+    width: 2.5px;
+    height: 100%;
+    background: #b86800;
+    border-radius: 1px;
+    transform-origin: bottom;
+    animation: indicatorBounce 0.6s infinite alternate ease-in-out;
+}
+
+.indicator-bar:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.indicator-bar:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes indicatorBounce {
+    0% { transform: scaleY(0.25); }
+    100% { transform: scaleY(1); }
+}
+
+.audio-play-main {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #ffd54f 0%, #f5b026 100%);
+    color: var(--text-dark);
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(245, 176, 38, 0.45);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.audio-play-main:hover {
+    transform: scale(1.12);
+    box-shadow: 0 6px 14px rgba(245, 176, 38, 0.6);
+}
+
+.audio-upload-btn {
+    background: #fdf6e2;
+    border: 1.5px dashed var(--gold);
+    color: var(--gold-dark);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.audio-upload-btn:hover {
+    background: #ffe082;
+    border-color: var(--gold-dark);
+    color: var(--text-dark);
+    transform: translateY(-1px);
+}
+
+/* Bouncy Hint Tag */
+.audio-card-hint {
+    display: none;
+    margin-top: 8px;
+    background: linear-gradient(135deg, #fff3c4 0%, #ffe082 100%);
+    border: 2px solid var(--gold);
+    padding: 6px 14px;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgba(245, 176, 38, 0.35);
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #8c4c00;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.audio-card-hint:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(245, 176, 38, 0.5);
+    background: #ffd54f;
+}
+
+/* Autoplay Prompt */
+.music-start-prompt {
+    position: fixed;
+    top: 135px;
+    right: 20px;
+    z-index: 9999;
+    background: #ffffff;
+    border: 2px dashed var(--gold);
+    padding: 9px 18px;
+    border-radius: 25px;
+    box-shadow: 0 6px 20px rgba(245, 176, 38, 0.3);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--gold-dark);
+    cursor: pointer;
+    animation: bounceSlow 2s infinite ease-in-out;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.music-start-prompt.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+}
+
+@media (max-width: 600px) {
+    .audio-player-card {
+        top: 8px;
+        right: 8px;
+    }
+    .audio-island-pill {
+        padding: 4px 10px 4px 5px;
+        gap: 7px;
+    }
+    .island-disc-mini {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+    }
+    .island-info {
+        max-width: 105px;
+    }
+    .island-title {
+        font-size: 0.74rem;
+    }
+    .audio-card-inner {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+    .audio-disc {
+        width: 42px;
+        height: 42px;
+    }
+    .audio-title {
+        max-width: 140px;
+        font-size: 0.84rem;
+    }
+    .audio-btn {
+        padding: 2px 6px;
+        font-size: 0.72rem;
+    }
+    .audio-play-main {
+        width: 32px;
+        height: 32px;
+        font-size: 0.88rem;
+    }
+    .audio-card-hint {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+}
+
+/* ==========================================================================
+   CURSOR TRAIL & BURST (GPU-ACCELERATED DOM PARTICLES, ZERO LAG)
+   ========================================================================== */
+.cursor-trail-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99999;
+    overflow: hidden;
+}
+
+.trail-spark {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+    will-change: transform, opacity;
+    animation: sparkFly 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes sparkFly {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate3d(var(--tx), var(--ty), 0) scale(0) rotate(var(--rot));
+        opacity: 0;
+    }
+}
+
+/* Floating gentle petals */
+.petals-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.petal-drift {
+    position: absolute;
+    top: -30px;
+    opacity: 0.6;
+    font-size: 16px;
+    animation: driftDown linear forwards;
+}
+
+@keyframes driftDown {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    15% { opacity: 0.65; }
+    85% { opacity: 0.65; }
+    100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+}
+
+/* ==========================================================================
+   COMMON STAGE & HEADINGS
+   ========================================================================== */
+.stage {
+    display: none;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    min-height: 100vh;
+    padding: 30px 20px 40px;
+    text-align: center;
+    position: relative;
+    z-index: 5;
+}
+
+.stage.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    opacity: 1;
+    transform: translateY(0);
+    animation: stageFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes stageFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.badge-2010 {
+    display: inline-block;
+    background: #fff3c4;
+    color: var(--gold-dark);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 5px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(245, 176, 38, 0.4);
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(245, 176, 38, 0.15);
+}
+
+.garden-title, .stage-title {
+    font-family: var(--font-hand);
+    font-size: 2.6rem;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.garden-subtitle, .stage-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 18px;
+    max-width: 650px;
+}
+
+/* Buttons */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ffd54f 0%, #f5b026 100%);
+    color: var(--text-dark);
+    border: none;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 13px 32px;
+    border-radius: 35px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(245, 176, 38, 0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 25px rgba(245, 176, 38, 0.5);
+}
+
+.btn-outline {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid var(--gold);
+    color: var(--gold-dark);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 10px 22px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-outline:hover {
+    background: var(--yellow-pastel);
+    transform: translateY(-2px);
+}
+
+.garden-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.btn-replay {
+    background: #ffffff;
+    border: 2px solid var(--gold);
+    color: var(--gold-dark);
+    font-size: 0.96rem;
+    padding: 12px 24px;
+    border-radius: 35px;
+    box-shadow: 0 4px 15px rgba(245, 176, 38, 0.2);
+}
+
+.btn-replay:hover {
+    background: #fff8e1;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(245, 176, 38, 0.35);
+}
+
+/* ==========================================================================
+   STAGE 1: CẢ VƯỜN HOA TULIP NỞ KHẮP MÀN HÌNH (FULL-SCREEN MEADOW)
+   ========================================================================== */
+.stage-garden {
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 0;
+}
+
+.garden-header {
+    position: relative;
+    z-index: 10;
+    margin-top: 25px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 2px solid rgba(245, 176, 38, 0.45);
+    border-radius: 30px;
+    padding: 24px 34px;
+    box-shadow: 0 12px 40px rgba(245, 176, 38, 0.25);
+    max-width: 620px;
+    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.garden-header.hidden-during-bloom {
+    opacity: 0 !important;
+    transform: translateY(-40px) scale(0.9) !important;
+    pointer-events: none !important;
+}
+
+.garden-sun {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(255, 238, 88, 0.45) 0%, rgba(255, 213, 79, 0.2) 40%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.tulip-meadow-wrap {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 2;
+}
+
+/* Đồi cỏ lượn sóng */
+.grass-hill {
+    position: absolute;
+    bottom: 0;
+    width: 120vw;
+    left: -10vw;
+    border-radius: 50% 50% 0 0;
+}
+
+.hill-back {
+    height: 60px;
+    background: linear-gradient(to top, #388e3c, #66bb6a);
+    z-index: 2;
+    transform: rotate(-1deg);
+}
+
+.hill-front {
+    height: 42px;
+    background: linear-gradient(to top, #2e7d32, #4caf50);
+    z-index: 5;
+    transform: rotate(1deg);
+}
+
+/* Các lớp hoa (Tách biệt render context với contain để không lag trang chính) */
+.meadow-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    contain: layout paint;
+}
+
+.layer-canopy {
+    z-index: 2;
+    opacity: 0.95;
+}
+
+.layer-back {
+    z-index: 1;
+    opacity: 0.88;
+}
+
+.layer-mid {
+    z-index: 3;
+}
+
+.layer-front {
+    z-index: 4;
+}
+
+/* Floating / Sky Tulips */
+.floating-tulip {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 3;
+    will-change: transform;
+}
+
+.floating-tulip .stem-curved {
+    width: 5px;
+    height: 0;
+    background: linear-gradient(to bottom, #4caf50, #81c784);
+    border-radius: 4px;
+    transition: height 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: height;
+}
+
+/* Cây hoa Tulip cá nhân */
+.tulip-plant {
+    position: absolute;
+    bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    transform-origin: bottom center;
+    cursor: pointer;
+    pointer-events: auto;
+    will-change: transform;
+}
+
+/* Chỉ 2 bông hoa tiền cảnh đung đưa cực kỳ nhẹ nhàng (7s), toàn bộ hoa khác giữ dáng tĩnh thanh lịch (triệt tiêu 95% tải animation) */
+.bloomed .layer-front .tulip-plant:nth-child(3) {
+    animation: gentleBreeze 7s ease-in-out infinite alternate;
+}
+.bloomed .layer-front .tulip-plant:nth-child(5) {
+    animation: gentleBreeze 8s ease-in-out infinite alternate -3s;
+}
+
+@keyframes gentleBreeze {
+    0% { transform: rotate(-0.8deg); }
+    100% { transform: rotate(0.8deg); }
+}
+
+/* Thân hoa tự nhiên, mượt mà (GPU accelerated) */
+.stem {
+    width: 9px;
+    height: 0;
+    background: linear-gradient(to right, #2e7d32 0%, #43a047 30%, #81c784 70%, #388e3c 100%);
+    border-radius: 5px;
+    transition: height 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: height;
+}
+
+/* Lá Cây Đa Tầng Phong Phú (Tối ưu hóa: Bỏ drop-shadow nặng nề, giữ màu gradient sắc nét) */
+.tulip-leaves {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.leaf {
+    position: absolute;
+    background: linear-gradient(135deg, #a5d6a7, #4caf50 55%, #2e7d32 100%);
+    border-radius: 50% 50% 12% 50%;
+    transform-origin: bottom center;
+    transform: scale(0);
+    transition: transform 1.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
+}
+
+.leaf::after {
+    content: '';
+    position: absolute;
+    top: 12%;
+    bottom: 10%;
+    left: 48%;
+    width: 1.5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+}
+
+/* Tầng 0: Lá sát đất (Gốc vươn rộng) */
+.leaf-base {
+    width: 22px;
+    height: 65px;
+    bottom: 0;
+}
+.leaf-l.leaf-base { left: -16px; transform: scale(0) rotate(-48deg); }
+.leaf-r.leaf-base { right: -16px; transform: scale(0) rotate(48deg) scaleX(-1); }
+
+/* Tầng 1: Lá thân dưới (~65px) */
+.leaf-tier-1 {
+    width: 18px;
+    height: 75px;
+    bottom: 60px;
+    background: linear-gradient(135deg, #81c784, #388e3c);
+    border-radius: 45% 55% 15% 50%;
+}
+.leaf-l.leaf-tier-1 { left: -11px; transform: scale(0) rotate(-35deg); }
+.leaf-r.leaf-tier-1 { right: -11px; transform: scale(0) rotate(35deg) scaleX(-1); }
+
+/* Tầng 2: Lá thân giữa (~140px) */
+.leaf-tier-2 {
+    width: 16px;
+    height: 80px;
+    bottom: 140px;
+    background: linear-gradient(135deg, #81c784, #2e7d32);
+    border-radius: 40% 60% 15% 50%;
+}
+.leaf-l.leaf-tier-2 { left: -9px; transform: scale(0) rotate(-28deg); }
+.leaf-r.leaf-tier-2 { right: -9px; transform: scale(0) rotate(28deg) scaleX(-1); }
+
+/* Tầng 3: Lá thân cao (~230px) */
+.leaf-tier-3 {
+    width: 14px;
+    height: 75px;
+    bottom: 230px;
+    background: linear-gradient(135deg, #a5d6a7, #388e3c);
+    border-radius: 35% 65% 15% 50%;
+}
+.leaf-l.leaf-tier-3 { left: -8px; transform: scale(0) rotate(-22deg); }
+.leaf-r.leaf-tier-3 { right: -8px; transform: scale(0) rotate(22deg) scaleX(-1); }
+
+/* Tương thích ngược */
+.leaf-lower { width: 22px; height: 65px; bottom: 0; }
+.leaf-l.leaf-lower { left: -16px; transform: scale(0) rotate(-48deg); }
+.leaf-r.leaf-lower { right: -16px; transform: scale(0) rotate(48deg) scaleX(-1); }
+.leaf-mid-stem { width: 17px; height: 75px; bottom: 65px; }
+.leaf-l.leaf-mid-stem { left: -10px; transform: scale(0) rotate(-30deg); }
+.leaf-r.leaf-mid-stem { right: -10px; transform: scale(0) rotate(30deg) scaleX(-1); }
+
+/* Instant Reset for True Blooming Sequence Replay */
+.instant-reset,
+.instant-reset *,
+.instant-reset *::before,
+.instant-reset *::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Nụ & Cánh Hoa Đa Sắc Màu (Chủ đạo vàng + Điểm xuyết hồng, san hô, cam hoàng hôn) */
+.flower-bud {
+    position: relative;
+    width: 46px;
+    height: 56px;
+    margin-bottom: -5px;
+    transform-origin: bottom center;
+    transform: scale(0.1);
+    opacity: 0;
+    transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s, opacity 0.8s ease 0.2s;
+}
+
+.petal {
+    position: absolute;
+    inset: 0;
+    border-radius: 50% 50% 30% 30%;
+    transform-origin: bottom center;
+    transform: rotate(0deg) scale(0.85);
+    transition: transform 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s;
+}
+
+/* 1. MÀU VÀNG CHỦ ĐẠO (Tulip Vàng Rạng Rỡ) */
+.p-back, .color-gold .p-back { background: linear-gradient(to bottom, #fff59d, #fbc02d); z-index: 1; }
+.p-left, .color-gold .p-left { background: linear-gradient(135deg, #fff9c4, #ffd54f); transform-origin: bottom center; z-index: 2; }
+.p-right, .color-gold .p-right { background: linear-gradient(225deg, #fff59d, #fbc02d); transform-origin: bottom center; z-index: 2; }
+.p-front, .color-gold .p-front {
+    background: linear-gradient(to bottom, #ffecb3, #ffd54f, #ffb300);
+    transform-origin: bottom center;
+    z-index: 3;
+    clip-path: polygon(15% 0%, 50% 35%, 85% 0%, 100% 100%, 0% 100%);
+}
+.flower-glow, .color-gold .flower-glow {
+    position: absolute;
+    inset: -12px;
+    background: radial-gradient(circle, rgba(255, 213, 79, 0.6) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 1.2s ease 1.6s;
+    pointer-events: none;
+}
+
+/* 2. MÀU HỒNG ĐÀO (Tulip Peach Blossom) */
+.color-peach .p-back { background: linear-gradient(to bottom, #ffcdd2, #ff8a80); }
+.color-peach .p-left { background: linear-gradient(135deg, #ffe0b2, #ffab91); }
+.color-peach .p-right { background: linear-gradient(225deg, #ffcdd2, #ff8a80); }
+.color-peach .p-front { background: linear-gradient(to bottom, #ffebee, #ff8a80, #ff5252); }
+.color-peach .flower-glow { background: radial-gradient(circle, rgba(255, 138, 128, 0.55) 0%, transparent 70%); }
+
+/* 3. MÀU CAM HOÀNG HÔN (Sunset Gold) */
+.color-sunset .p-back { background: linear-gradient(to bottom, #ffe082, #ff9800); }
+.color-sunset .p-left { background: linear-gradient(135deg, #fff3e0, #ffb74d); }
+.color-sunset .p-right { background: linear-gradient(225deg, #ffe082, #f57c00); }
+.color-sunset .p-front { background: linear-gradient(to bottom, #fff8e1, #ffa726, #f57c00); }
+.color-sunset .flower-glow { background: radial-gradient(circle, rgba(255, 167, 38, 0.6) 0%, transparent 70%); }
+
+/* 4. MÀU HỒNG PHẤN (Rose Blush) */
+.color-rose .p-back { background: linear-gradient(to bottom, #fce4ec, #f06292); }
+.color-rose .p-left { background: linear-gradient(135deg, #f8bbd0, #ec407a); }
+.color-rose .p-right { background: linear-gradient(225deg, #fce4ec, #f06292); }
+.color-rose .p-front { background: linear-gradient(to bottom, #fdf7f9, #f48fb1, #e91e63); }
+.color-rose .flower-glow { background: radial-gradient(circle, rgba(240, 98, 146, 0.55) 0%, transparent 70%); }
+
+/* 5. MÀU KEM DỊU NGỌT (Pastel Cream) */
+.color-cream .p-back { background: linear-gradient(to bottom, #ffffff, #fff59d); }
+.color-cream .p-left { background: linear-gradient(135deg, #ffffff, #fff9c4); }
+.color-cream .p-right { background: linear-gradient(225deg, #ffffff, #fff59d); }
+.color-cream .p-front { background: linear-gradient(to bottom, #ffffff, #fff9c4, #ffe082); }
+.color-cream .flower-glow { background: radial-gradient(circle, rgba(255, 245, 157, 0.6) 0%, transparent 70%); }
+
+/* Bloomed State: Cánh bung nở rực rỡ và lá vươn rộng phủ dọc khắp thân hoa */
+.bloomed .flower-bud {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.bloomed .leaf-l.leaf-base, .bloomed .leaf-l.leaf-lower { transform: scale(1) rotate(-48deg); }
+.bloomed .leaf-r.leaf-base, .bloomed .leaf-r.leaf-lower { transform: scale(1) rotate(48deg) scaleX(-1); }
+
+.bloomed .leaf-l.leaf-tier-1, .bloomed .leaf-l.leaf-mid-stem { transform: scale(1) rotate(-35deg); }
+.bloomed .leaf-r.leaf-tier-1, .bloomed .leaf-r.leaf-mid-stem { transform: scale(1) rotate(35deg) scaleX(-1); }
+
+.bloomed .leaf-l.leaf-tier-2 { transform: scale(1) rotate(-28deg); }
+.bloomed .leaf-r.leaf-tier-2 { transform: scale(1) rotate(28deg) scaleX(-1); }
+
+.bloomed .leaf-l.leaf-tier-3 { transform: scale(1) rotate(-22deg); }
+.bloomed .leaf-r.leaf-tier-3 { transform: scale(1) rotate(22deg) scaleX(-1); }
+
+.bloomed .leaf-l.leaf-tier-4 { transform: scale(1) rotate(-18deg); }
+.bloomed .leaf-r.leaf-tier-4 { transform: scale(1) rotate(18deg) scaleX(-1); }
+
+.bloomed .leaf-l.leaf-tier-5 { transform: scale(1) rotate(-14deg); }
+.bloomed .leaf-r.leaf-tier-5 { transform: scale(1) rotate(14deg) scaleX(-1); }
+
+.bloomed .p-left {
+    transform: rotate(-32deg) translateY(-2px) scale(1.1);
+}
+
+.bloomed .p-right {
+    transform: rotate(32deg) translateY(-2px) scale(1.1);
+}
+
+.bloomed .p-front {
+    transform: scale(1.14) translateY(-5px);
+}
+
+.bloomed .flower-glow {
+    opacity: 1;
+}
+
+/* Hạt phấn hoa và lấp lánh khi bung nở */
+.bloom-pollen-sparkle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    user-select: none;
+    animation: pollenFly 1.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes pollenFly {
+    0% {
+        transform: translate(0, 0) scale(0.3);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--vx), var(--vy)) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
+   STAGE 2: BỨC THƯ TAY 3D XINH & LỜI CHÚC
+   ========================================================================== */
+.stage-mailbox {
+    justify-content: center;
+}
+
+.envelope-container {
+    margin: 25px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    perspective: 1000px;
+}
+
+.letter-envelope {
+    position: relative;
+    width: 230px;
+    height: 155px;
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+}
+
+.letter-envelope:hover {
+    transform: translateY(-8px) scale(1.05);
+}
+
+.envelope-back {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #fffdf0 0%, #faeac0 100%);
+    border-radius: 16px;
+    border: 2px solid #e5b342;
+    box-shadow: 0 14px 30px rgba(229, 148, 25, 0.28);
+}
+
+.envelope-paper-preview {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    right: 20px;
+    height: 95px;
+    background: #ffffff;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+    gap: 8px;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 2;
+}
+
+.preview-line {
+    width: 70%;
+    height: 4px;
+    background: #ffe082;
+    border-radius: 2px;
+}
+
+.preview-line.short {
+    width: 45%;
+}
+
+.preview-seal-heart {
+    font-size: 1.15rem;
+    margin-top: 4px;
+}
+
+.envelope-front {
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(0 100%, 50% 48%, 100% 100%, 0 100%, 0 0, 50% 48%, 0 100%);
+    background: linear-gradient(135deg, #fff3c4 0%, #ffd54f 100%);
+    border-radius: 0 0 16px 16px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.envelope-front::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(0 100%, 50% 48%, 100% 0, 100% 100%);
+    background: linear-gradient(225deg, #ffe082 0%, #f5b026 100%);
+    opacity: 0.9;
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    background: linear-gradient(to bottom, #ffd54f 0%, #f5b026 100%);
+    transform-origin: top center;
+    transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 4;
+    border-radius: 16px 16px 0 0;
+}
+
+.wax-seal {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd54f 0%, #f5b026 55%, #b86800 100%);
+    border: 2.5px solid #fff;
+    box-shadow: 0 5px 14px rgba(184, 104, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.seal-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.envelope-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.94);
+    border: 1.5px solid var(--gold);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 3px 14px;
+    border-radius: 14px;
+    z-index: 6;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.letter-envelope.opened .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+.letter-envelope.opened .wax-seal {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+}
+
+.letter-envelope.opened .envelope-paper-preview {
+    transform: translateY(-55px);
+}
+
+.envelope-tip {
+    margin-top: 18px;
+    font-weight: 700;
+    color: var(--gold-dark);
+    font-size: 0.95rem;
+    animation: bounceTip 1.8s infinite ease-in-out;
+}
+
+@keyframes bounceTip {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Popup Letter Overlay */
+.letter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 10, 5, 0.65);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    overflow-y: auto;
+    transition: opacity 0.34s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.34s ease;
+}
+
+.letter-overlay.closing {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.letter-overlay.closing .letter-card {
+    animation: letterCardExit 0.34s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+@keyframes letterCardExit {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(28px) scale(0.92);
+    }
+}
+
+.letter-card {
+    background: #fffdf7;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    border-radius: 20px;
+    padding: 22px 26px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    border: 2px solid var(--gold);
+    position: relative;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    animation: popLetter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes popLetter {
+    from { opacity: 0; transform: translateY(25px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.letter-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--yellow-soft);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.letter-close-btn:hover {
+    transform: scale(1.1);
+}
+
+.letter-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.letter-dear {
+    font-family: var(--font-hand);
+    font-size: 1.85rem;
+    color: var(--gold-dark);
+    font-weight: 700;
+}
+
+.letter-line {
+    color: var(--gold);
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    margin: 6px 0 12px;
+}
+
+.letter-content {
+    font-family: var(--font-hand);
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    min-height: 100px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.cursor {
+    display: inline-block;
+    color: var(--gold-dark);
+    font-weight: 700;
+    animation: blinkCursor 0.8s infinite;
+}
+
+@keyframes blinkCursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Letter Stickers Section */
+.letter-stickers-wrap {
+    margin-top: 15px;
+    padding-top: 14px;
+    border-top: 1.5px dashed rgba(245, 176, 38, 0.45);
+}
+
+.stickers-intro-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.stickers-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--gold-dark);
+}
+
+.letter-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    background: #fff8e1;
+    border: 1px solid var(--gold);
+    padding: 2px 10px;
+    border-radius: 12px;
+}
+
+.stickers-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.sticker-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    user-select: none;
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+}
+
+.sticker-photo-crop {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3.5px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16), 0 0 0 1.5px rgba(245, 176, 38, 0.45);
+    overflow: hidden;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.sticker-photo-crop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    display: block;
+}
+
+.sticker-item:hover .sticker-photo-crop {
+    transform: scale(1.15);
+    box-shadow: 0 8px 20px rgba(245, 176, 38, 0.55), 0 0 0 2px var(--gold-dark);
+}
+
+.st-caption {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--gold-dark);
+    background: rgba(255, 248, 225, 0.95);
+    border: 1px solid rgba(245, 176, 38, 0.4);
+    border-radius: 10px;
+    padding: 1.5px 7px;
+    margin-top: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+    max-width: 88px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.sticker-item:nth-child(odd) { transform: rotate(-3deg); }
+.sticker-item:nth-child(even) { transform: rotate(3deg); }
+.sticker-item:nth-child(3n) { transform: rotate(-1.5deg); }
+.sticker-item:nth-child(4n) { transform: rotate(4deg); }
+
+/* Custom Photo Stickers (Cắt từ ảnh thật) */
+.custom-photo-sticker {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 3.5px solid #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), 0 0 0 1.5px rgba(245, 176, 38, 0.5);
+    overflow: hidden;
+    cursor: pointer;
+    transform: rotate(-3deg);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    flex-shrink: 0;
+}
+
+.custom-photo-sticker:hover {
+    transform: scale(1.18) rotate(4deg);
+    box-shadow: 0 8px 22px rgba(245, 176, 38, 0.55);
+}
+
+.custom-photo-sticker img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sticker-upload-container {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.btn-sticker-upload {
+    display: inline-block;
+    background: #fff8e1;
+    border: 1.5px dashed var(--gold);
+    color: var(--gold-dark);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-sticker-upload:hover {
+    background: var(--gold);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.sticker-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.letter-actions {
+    margin-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-replay-letter {
+    background: #ffffff;
+    border: 1.5px solid var(--gold);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 10px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-replay-letter:hover {
+    background: #fff8e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 176, 38, 0.25);
+}
+
+/* ==========================================================================
+   STAGE 3: HÀNG ẢNH ĐUNG ĐƯA
+   ========================================================================== */
+.stage-photos.active .photos-header {
+    animation: photosHeaderSlide 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes photosHeaderSlide {
+    0% {
+        opacity: 0;
+        transform: translateY(-16px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gallery-wrapper {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.stage-photos.active .gallery-wrapper {
+    animation: galleryCascade 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) 0.08s both;
+}
+
+@keyframes galleryCascade {
+    0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.clothesline {
+    position: relative;
+    width: 100%;
+    height: 42px;
+    margin-bottom: 5px;
+}
+
+.wire {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, #8d6e63, #bcaaa4, #8d6e63);
+    border-radius: 3px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+}
+
+/* Laurel Garland */
+.laurel-garland {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    width: 100%;
+    height: 28px;
+    pointer-events: none;
+    z-index: 2;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.garland-leaf {
+    font-size: 1.15rem;
+    line-height: 1;
+    transform-origin: center;
+}
+
+.garland-leaf:nth-child(2n) { transform: rotate(14deg); }
+.garland-leaf:nth-child(3n) { transform: rotate(-14deg); }
+
+/* Fairy Lights (Crisp, static warm golden glow - zero ongoing frame cost) */
+.fairy-lights-row {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    height: 26px;
+    pointer-events: none;
+    z-index: 3;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    padding: 0 10px;
+}
+
+.fairy-light {
+    position: relative;
+    width: 11px;
+    height: 15px;
+    border-radius: 50% 50% 35% 35%;
+    background: radial-gradient(circle, #ffffff 15%, #ffe082 55%, #f5b026 100%);
+    box-shadow: 0 0 8px rgba(255, 213, 79, 0.8), 0 0 16px rgba(245, 176, 38, 0.5);
+}
+
+.fairy-light::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 3.5px;
+    width: 4px;
+    height: 3px;
+    background: #5d4037;
+    border-radius: 1px;
+}
+
+/* Danh sách khung ảnh đung đưa */
+.polaroid-list {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 18px;
+    flex-wrap: wrap;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px 10px 30px;
+}
+
+.polaroid-item {
+    position: relative;
+    cursor: pointer;
+    transform-origin: top center;
+    transition: transform 0.35s ease, z-index 0.2s ease;
+}
+
+/* Kẹp gỗ */
+.clip {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 24px;
+    background: linear-gradient(to right, #bcaaa4, #8d6e63);
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.polaroid {
+    width: 172px;
+    background: #ffffff;
+    padding: 10px 10px 14px;
+    border-radius: 6px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+}
+
+.polaroid-img {
+    width: 100%;
+    height: 170px;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    background: #fdfaf2;
+    display: block;
+}
+
+.polaroid-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transition: transform 0.4s ease;
+    display: block;
+}
+
+.polaroid-item:hover .polaroid-img img {
+    transform: scale(1.06);
+}
+
+.p-tag {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #4a2800;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(4px);
+    padding: 2.5px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(245, 176, 38, 0.45);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+    z-index: 2;
+    pointer-events: none;
+    max-width: 85%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.p-caption {
+    font-family: var(--font-hand);
+    font-size: 1.15rem;
+    color: var(--text-dark);
+    margin-top: 8px;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 152px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Đung đưa nhẹ nhàng (Gentle swinging, 60fps) */
+.swing-a { animation: swing 4.2s infinite ease-in-out; }
+.swing-b { animation: swing 3.8s infinite ease-in-out -1.2s; }
+.swing-c { animation: swing 4.5s infinite ease-in-out -2.4s; }
+.swing-d { animation: swing 3.9s infinite ease-in-out -0.8s; }
+.swing-e { animation: swing 4.3s infinite ease-in-out -1.8s; }
+.swing-f { animation: swing 4.0s infinite ease-in-out -2.8s; }
+
+@keyframes swing {
+    0%, 100% { transform: rotate(-3.5deg); }
+    50% { transform: rotate(3.5deg); }
+}
+
+/* Hover: Dừng đung đưa, zoom nhẹ & phát sáng nhẹ */
+.polaroid-item:hover {
+    animation-play-state: paused;
+    transform: scale(1.14) translateY(-6px) rotate(0deg) !important;
+    z-index: 20;
+}
+
+.polaroid-item:hover .polaroid {
+    box-shadow: 0 16px 35px rgba(245, 176, 38, 0.4);
+    border: 1px solid var(--gold);
+}
+
+/* Upload ảnh tiện ích */
+.photo-upload-box {
+    margin: 15px auto 25px;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1.5px dashed var(--gold);
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.btn-upload {
+    display: inline-block;
+    margin-top: 8px;
+    background: var(--yellow-bright);
+    color: var(--text-dark);
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-upload:hover {
+    transform: translateY(-2px);
+}
+
+.nav-bottom-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.page-footer {
+    margin-top: 35px;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+}
+
+.page-footer strong {
+    color: var(--gold-dark);
+}
+
+/* ==========================================================================
+   HIỆU ỨNG HOA MỌC THEO VÒNG TRÒN TỪ ẢNH RA KHẮP MÀN HÌNH (CONCENTRIC SHOCKWAVE)
+   ========================================================================== */
+.concentric-bloom-flower {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10003;
+    user-select: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: circularFlowerBurst 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes circularFlowerBurst {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(-30deg);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(var(--target-scale, 1.4)) rotate(8deg);
+        opacity: 1;
+    }
+    65% {
+        transform: translate(-50%, -50%) scale(calc(var(--target-scale, 1.4) * 0.95)) rotate(0deg);
+        opacity: 0.95;
+    }
+    100% {
+        transform: translate(-50%, calc(-50% - 25px)) scale(calc(var(--target-scale, 1.4) * 0.6)) rotate(14deg);
+        opacity: 0;
+    }
+}
+
+.photo-shockwave-ring {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10001;
+    border: 2.5px solid rgba(255, 213, 79, 0.85);
+    background: radial-gradient(circle, rgba(255, 238, 88, 0.18) 0%, rgba(245, 176, 38, 0.05) 60%, transparent 80%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0.05);
+    animation: ringShockwaveExpand 1.05s cubic-bezier(0.18, 0.85, 0.25, 1) forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes ringShockwaveExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.05);
+        opacity: 1;
+        box-shadow: 0 0 12px rgba(255, 213, 79, 0.9);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(var(--ring-scale, 3.2));
+        opacity: 0;
+        box-shadow: 0 0 35px rgba(245, 176, 38, 0);
+    }
+}
+
+/* ==========================================================================
+   HIỆU ỨNG HOA NỞ BỪNG KHI BẤM VÀO ẢNH TREO
+   ========================================================================== */
+.photo-bloom-petal {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10001;
+    font-size: 1.6rem;
+    animation: burstFly 1.25s cubic-bezier(0.12, 0.9, 0.25, 1) forwards;
+    transform-origin: center center;
+    user-select: none;
+    filter: drop-shadow(0 2px 6px rgba(245, 176, 38, 0.45));
+}
+
+@keyframes burstFly {
+    0% {
+        transform: translate(0, 0) scale(0.2) rotate(0deg);
+        opacity: 1;
+    }
+    45% {
+        transform: translate(var(--dx), var(--dy)) scale(1.35) rotate(var(--rot));
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(var(--dx) * 1.3), calc(var(--dy) * 1.3 + 35px)) scale(0.7) rotate(calc(var(--rot) * 1.6));
+        opacity: 0;
+    }
+}
+
+.photo-bloom-ripple {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(255, 213, 79, 0.95);
+    background: radial-gradient(circle, rgba(255, 238, 88, 0.5) 0%, rgba(245, 176, 38, 0.2) 55%, transparent 75%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0.2);
+    animation: rippleExpand 0.85s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes rippleExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(255, 213, 79, 0.9);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(3.5);
+        opacity: 0;
+        box-shadow: 0 0 40px rgba(245, 176, 38, 0);
+    }
+}
+
+.photo-blooming-bounce {
+    animation: photoBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes photoBounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15) translateY(-12px); }
+    100% { transform: scale(1); }
+}
+
+/* Modal xem ảnh lớn với 4 góc hoa tulip nở */
+.image-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.image-modal-bg {
+    position: absolute;
+    inset: 0;
+    background: rgba(18, 14, 8, 0.76);
+}
+
+.image-modal-box {
+    position: relative;
+    z-index: 2;
+    background: #ffffff;
+    padding: 16px 16px 20px;
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    box-shadow: 0 25px 65px rgba(0, 0, 0, 0.45), 0 0 35px rgba(245, 176, 38, 0.4);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    animation: modalSpring 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes modalSpring {
+    0% {
+        transform: scale(0.65) translateY(30px);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 4 Góc hoa tulip nở bừng quanh ảnh lớn */
+.modal-floral-corner {
+    position: absolute;
+    font-size: 1.8rem;
+    z-index: 10;
+    filter: drop-shadow(0 2px 6px rgba(245, 176, 38, 0.6));
+    animation: cornerBloom 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.corner-tl { top: -16px; left: -16px; transform-origin: bottom right; }
+.corner-tr { top: -16px; right: -16px; transform-origin: bottom left; }
+.corner-bl { bottom: -16px; left: -16px; transform-origin: top right; }
+.corner-br { bottom: -16px; right: -16px; transform-origin: top left; }
+
+@keyframes cornerBloom {
+    0% {
+        transform: scale(0) rotate(-45deg);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.35) rotate(12deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 36px;
+    height: 36px;
+    background: var(--gold-dark);
+    color: #ffffff;
+    border: 2.5px solid #ffffff;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+    z-index: 15;
+}
+
+.modal-close-btn:hover {
+    transform: scale(1.15) rotate(90deg);
+    background: #e65100;
+}
+
+.modal-img-wrap {
+    width: 100%;
+    height: 310px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff9c4;
+}
+
+.modal-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-caption {
+    font-family: var(--font-hand);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 768px) {
+    .garden-title, .stage-title { font-size: 2.1rem; }
+    .polaroid { width: 145px; }
+    .polaroid-img { height: 135px; }
+    .tulip-meadow-wrap { height: 100vh; }
+}
