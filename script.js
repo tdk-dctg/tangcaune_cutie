@@ -48,6 +48,7 @@ class AudioPlaylistController {
         this.islandPill = document.getElementById('audio-island-pill');
         this.islandTitle = document.getElementById('island-title');
         this.islandDiscMini = document.getElementById('island-disc-mini');
+        this.islandNextBtn = document.getElementById('island-next-btn');
         this.collapseBtn = document.getElementById('audio-collapse-btn');
         this.isHovering = false;
         this.justCollapsed = false;
@@ -81,6 +82,20 @@ class AudioPlaylistController {
         this.init();
     }
 
+    // Bung to widget âm nhạc trong 1 khoảng thời gian nhất định (mặc định 5s) rồi tự co nhỏ lại
+    showcaseIntro(durationMs = 5000) {
+        if (!this.corner) return;
+        clearTimeout(this.collapseTimer);
+        this.justCollapsed = false;
+        this.corner.classList.add('expanded', 'intro-highlight');
+
+        this.collapseTimer = setTimeout(() => {
+            if (!this.isHovering && !this.isPlaylistOpen) {
+                this.corner.classList.remove('expanded', 'intro-highlight');
+            }
+        }, durationMs);
+    }
+
     init() {
         if (!this.corner) return;
 
@@ -89,10 +104,21 @@ class AudioPlaylistController {
         // 1. Tương tác Dynamic Island (Phóng to khi hover/tap, thu nhỏ khi rời đi)
         if (this.islandPill) {
             this.islandPill.addEventListener('click', (e) => {
+                // Nếu bấm vào nút ⏭ mini thì không phóng to mà để nút ⏭ tự đổi bài
+                if (e.target.closest('#island-next-btn')) return;
                 e.stopPropagation();
                 this.justCollapsed = false;
                 this.corner.classList.add('expanded');
                 clearTimeout(this.collapseTimer);
+            });
+        }
+
+        // Nút ⏭ mini trực tiếp trên viên Dynamic Island
+        if (this.islandNextBtn) {
+            this.islandNextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.nextTrack();
+                if (!this.isPlaying) this.play();
             });
         }
 
@@ -102,7 +128,7 @@ class AudioPlaylistController {
                 e.stopPropagation();
                 this.justCollapsed = true;
                 this.isHovering = false;
-                this.corner.classList.remove('expanded');
+                this.corner.classList.remove('expanded', 'intro-highlight');
                 this.togglePlaylist(false);
                 clearTimeout(this.collapseTimer);
             });
@@ -120,25 +146,31 @@ class AudioPlaylistController {
             this.justCollapsed = false;
             this.collapseTimer = setTimeout(() => {
                 if (!this.isHovering && !this.isPlaylistOpen) {
-                    this.corner.classList.remove('expanded');
+                    this.corner.classList.remove('expanded', 'intro-highlight');
                 }
             }, 700);
         });
 
-        // Click ra ngoài để thu nhỏ widget và đóng playlist
-        document.addEventListener('click', (e) => {
+        // Click hoặc chạm ra ngoài để thu nhỏ widget và đóng playlist (hỗ trợ cả Mobile & Desktop)
+        const handleOutsideDismiss = (e) => {
             if (this.corner && !this.corner.contains(e.target)) {
-                this.corner.classList.remove('expanded');
+                this.corner.classList.remove('expanded', 'intro-highlight');
                 this.togglePlaylist(false);
             }
-        });
-
-        // Ban đầu mới vào trang: Phóng to 4 giây để gây chú ý, sau đó thu nhỏ lại kiểu Dynamic Island
-        this.collapseTimer = setTimeout(() => {
-            if (!this.isHovering) {
-                this.corner.classList.remove('expanded');
+        };
+        document.addEventListener('click', handleOutsideDismiss);
+        document.addEventListener('touchend', (e) => {
+            if (this.corner && !this.corner.contains(e.target)) {
+                this.corner.classList.remove('expanded', 'intro-highlight');
+                this.togglePlaylist(false);
             }
-        }, 4000);
+        }, { passive: true });
+
+        // Nếu không có màn che hộp quà (hoặc màn che đã mở), bung to 5s để giới thiệu
+        const giftOverlay = document.getElementById('gift-intro-overlay');
+        if (!giftOverlay || giftOverlay.classList.contains('opened') || window.getComputedStyle(giftOverlay).display === 'none') {
+            this.showcaseIntro(5000);
+        }
 
         if (this.playBtn) {
             this.playBtn.addEventListener('click', (e) => {
@@ -1281,6 +1313,8 @@ function initGiftIntro(audioCtrl) {
         // 1. Kích hoạt phát nhạc bài 1 ngay lập tức qua user gesture
         if (audioCtrl) {
             audioCtrl.playTrack(0);
+            // Bung to widget âm nhạc 5s để người xem chú ý có nút chuyển bài & Playlist rồi tự thu nhỏ
+            audioCtrl.showcaseIntro(5000);
         }
 
         // 2. Kích hoạt toàn bộ vườn hoa tulip bung nở từ đất lên trời

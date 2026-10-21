@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.2">
+    <link rel="stylesheet" href="style.css?v=2.4">
 </head>
 <body>
     <!-- Cursor Trail Container (GPU Accelerated, Zero Lag) -->
@@ -21,7 +21,7 @@
     <!-- Prominent Dynamic Island Audio Player Widget (Top-Right) -->
     <div class="audio-player-card expanded" id="audio-player-card">
         <!-- Mini Dynamic Island Capsule (Khi thu nhỏ) -->
-        <div class="audio-island-pill" id="audio-island-pill" title="Chạm hoặc rê chuột để mở góc âm nhạc!">
+        <div class="audio-island-pill" id="audio-island-pill" title="Chạm để mở góc âm nhạc hoặc bấm ⏭ để đổi bài!">
             <div class="island-disc-mini" id="island-disc-mini">🌷</div>
             <div class="island-info">
                 <span class="island-title" id="island-title">1. Ờ Lờ Waay</span>
@@ -29,6 +29,7 @@
             <div class="island-wave">
                 <span></span><span></span><span></span>
             </div>
+            <button class="island-next-btn" id="island-next-btn" title="Đổi bài tiếp theo (⏭)">⏭</button>
         </div>
 
         <!-- Full Expanded Card Inner (Khi phóng to) -->
@@ -78,7 +79,7 @@
         </div>
         <!-- Bouncy Big Hint Tag inviting click -->
         <div class="audio-card-hint" id="audio-card-hint" title="Bấm vào đây để chuyển bài hát nhanh!">
-            <span>👉 Bấm vào đây để chuyển nhạc các kiểu =)) 🎶</span>
+            <span>👉 Bấm ⏮ ⏭ hoặc Playlist để đổi 4 bài hát nha! 🎶</span>
         </div>
         <input type="file" id="custom-audio-file" accept="audio/*" style="display:none">
         <audio id="real-audio-element" src="track1_always.ogg" autoplay preload="auto"></audio>

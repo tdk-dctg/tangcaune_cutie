@@ -65,19 +65,44 @@ body {
 .audio-island-pill {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
     background: rgba(22, 22, 22, 0.96);
     border: 2px solid var(--gold);
     border-radius: 30px;
-    padding: 5px 14px 5px 6px;
+    padding: 5px 8px 5px 6px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 0 16px rgba(245, 176, 38, 0.4);
     cursor: pointer;
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    animation: pillPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes pillPop {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .audio-island-pill:hover {
-    transform: scale(1.06);
+    transform: scale(1.05);
     box-shadow: 0 10px 30px rgba(245, 176, 38, 0.6);
+}
+
+.audio-player-card.playing .audio-island-pill {
+    animation: pillPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, islandAliveGlow 3.5s infinite ease-in-out;
+}
+
+@keyframes islandAliveGlow {
+    0%, 100% {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 0 14px rgba(245, 176, 38, 0.35);
+    }
+    50% {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 24px rgba(245, 176, 38, 0.7);
+    }
 }
 
 .island-disc-mini {
@@ -91,6 +116,39 @@ body {
     justify-content: center;
     font-size: 0.95rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+}
+
+/* Nút Next mini trực tiếp trên viên thuốc Dynamic Island */
+.island-next-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 213, 79, 0.65);
+    background: rgba(255, 213, 79, 0.18);
+    color: #ffd54f;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: 0;
+    margin-left: 2px;
+    flex-shrink: 0;
+}
+
+.island-next-btn:hover {
+    background: var(--gold);
+    color: #1a1a1a;
+    border-color: #ffd54f;
+    transform: scale(1.15);
+    box-shadow: 0 0 12px rgba(245, 176, 38, 0.75);
+}
+
+.island-next-btn:active {
+    transform: scale(0.92);
 }
 
 .audio-player-card.playing .island-disc-mini {
@@ -187,6 +245,39 @@ body {
 .audio-player-card.expanded .audio-card-hint {
     display: block;
     animation: hintWiggle 2s infinite ease-in-out;
+}
+
+.audio-player-card.expanded.intro-highlight .audio-card-inner {
+    border-color: #ffd54f;
+    animation: expandCard 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, introCardPulse 2s infinite ease-in-out;
+}
+
+@keyframes introCardPulse {
+    0%, 100% {
+        box-shadow: 0 12px 35px rgba(245, 176, 38, 0.45), 0 0 16px rgba(245, 176, 38, 0.3);
+    }
+    50% {
+        box-shadow: 0 16px 48px rgba(245, 176, 38, 0.75), 0 0 32px rgba(245, 176, 38, 0.6);
+        transform: scale(1.02);
+    }
+}
+
+@keyframes hintWiggle {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    20% {
+        transform: translateY(-2px) rotate(-1.5deg);
+    }
+    40% {
+        transform: translateY(1.5px) rotate(1.5deg);
+    }
+    60% {
+        transform: translateY(-1px) rotate(-0.8deg);
+    }
+    80% {
+        transform: translateY(0.5px) rotate(0.8deg);
+    }
 }
 
 @keyframes expandCard {
@@ -2456,4 +2547,108 @@ body {
     .polaroid { width: 145px; }
     .polaroid-img { height: 135px; }
     .tulip-meadow-wrap { height: 100vh; }
+}
+
+@media (max-width: 480px) {
+    /* Dynamic Island Widget trên điện thoại */
+    .audio-player-card {
+        top: max(10px, env(safe-area-inset-top, 10px));
+        right: max(10px, env(safe-area-inset-right, 10px));
+        max-width: calc(100vw - 20px);
+    }
+
+    /* Viên thuốc thu nhỏ trên mobile */
+    .audio-island-pill {
+        padding: 4px 7px 4px 5px;
+        gap: 6px;
+    }
+
+    .island-disc-mini {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+    }
+
+    .island-info {
+        max-width: 105px;
+    }
+
+    .island-title {
+        font-size: 0.74rem;
+    }
+
+    .island-next-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 0.68rem;
+    }
+
+    /* Khung mở rộng trên mobile: Vừa vặn hoàn hảo mọi màn hình, không tràn viền */
+    .audio-card-inner {
+        padding: 10px 24px 10px 12px;
+        gap: 10px;
+        max-width: calc(100vw - 20px);
+        border-radius: 20px;
+    }
+
+    .audio-disc {
+        width: 46px;
+        height: 46px;
+    }
+
+    .disc-center {
+        font-size: 1.1rem;
+    }
+
+    .audio-title {
+        font-size: 0.88rem;
+        max-width: 165px;
+    }
+
+    .audio-subtitle {
+        font-size: 0.72rem;
+        margin-bottom: 5px;
+    }
+
+    .audio-controls-row {
+        gap: 4px;
+    }
+
+    .audio-btn {
+        font-size: 0.74rem;
+        padding: 3px 7px;
+        border-radius: 12px;
+    }
+
+    .audio-play-main {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+    }
+
+    .audio-upload-btn {
+        font-size: 0.72rem;
+        padding: 3px 7px;
+    }
+
+    .audio-collapse-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+        top: 7px;
+        right: 7px;
+    }
+
+    .audio-card-hint {
+        font-size: 0.74rem;
+        padding: 5px 10px;
+        max-width: calc(100vw - 20px);
+        text-align: center;
+    }
+
+    .audio-playlist-drawer {
+        width: calc(100vw - 20px);
+        max-width: 330px;
+        padding: 12px 14px;
+    }
 }
