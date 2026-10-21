@@ -48,7 +48,9 @@ class AudioPlaylistController {
         this.islandPill = document.getElementById('audio-island-pill');
         this.islandTitle = document.getElementById('island-title');
         this.islandDiscMini = document.getElementById('island-disc-mini');
+        this.collapseBtn = document.getElementById('audio-collapse-btn');
         this.isHovering = false;
+        this.justCollapsed = false;
         this.collapseTimer = null;
 
         this.isPlaying = false;
@@ -88,24 +90,47 @@ class AudioPlaylistController {
         if (this.islandPill) {
             this.islandPill.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.justCollapsed = false;
                 this.corner.classList.add('expanded');
+                clearTimeout(this.collapseTimer);
+            });
+        }
+
+        // Nút X thu nhỏ lại Dynamic Island ngay lập tức
+        if (this.collapseBtn) {
+            this.collapseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.justCollapsed = true;
+                this.isHovering = false;
+                this.corner.classList.remove('expanded');
+                this.togglePlaylist(false);
                 clearTimeout(this.collapseTimer);
             });
         }
 
         this.corner.addEventListener('mouseenter', () => {
             this.isHovering = true;
+            if (this.justCollapsed) return;
             clearTimeout(this.collapseTimer);
             this.corner.classList.add('expanded');
         });
 
         this.corner.addEventListener('mouseleave', () => {
             this.isHovering = false;
+            this.justCollapsed = false;
             this.collapseTimer = setTimeout(() => {
                 if (!this.isHovering && !this.isPlaylistOpen) {
                     this.corner.classList.remove('expanded');
                 }
             }, 700);
+        });
+
+        // Click ra ngoài để thu nhỏ widget và đóng playlist
+        document.addEventListener('click', (e) => {
+            if (this.corner && !this.corner.contains(e.target)) {
+                this.corner.classList.remove('expanded');
+                this.togglePlaylist(false);
+            }
         });
 
         // Ban đầu mới vào trang: Phóng to 4 giây để gây chú ý, sau đó thu nhỏ lại kiểu Dynamic Island
@@ -648,7 +673,7 @@ function replayFlowerBloom() {
                 header.classList.remove('hidden-during-bloom');
             }
             if (subtitle) {
-                subtitle.textContent = 'Vườn hoa tulip rực rỡ đã nở rộ tặng TQZ from tdk ✨';
+                subtitle.textContent = 'Sản phẩm này bản quyền của tdk ✨';
             }
         }, 2400);
     }, 60);

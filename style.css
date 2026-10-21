@@ -139,24 +139,52 @@ body {
     background: rgba(255, 255, 255, 0.98);
     border: 2.5px solid var(--gold);
     border-radius: 24px;
-    padding: 12px 20px;
+    padding: 12px 32px 12px 20px;
     box-shadow: 0 12px 35px rgba(245, 176, 38, 0.38), 0 3px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
 }
 
-/* Expansion Trigger: When hovered or has .expanded class */
-.audio-player-card.expanded .audio-island-pill,
-.audio-player-card:hover .audio-island-pill {
+/* Nút X thu nhỏ widget audio thành Dynamic Island pill */
+.audio-collapse-btn {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(245, 176, 38, 0.15);
+    border: 1px solid rgba(245, 176, 38, 0.35);
+    color: var(--gold-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 5;
+    padding: 0;
+}
+
+.audio-collapse-btn:hover {
+    background: var(--gold);
+    color: #fff;
+    border-color: var(--gold-dark);
+    transform: scale(1.15) rotate(90deg);
+}
+
+/* Expansion Trigger: When has .expanded class */
+.audio-player-card.expanded .audio-island-pill {
     display: none;
 }
 
-.audio-player-card.expanded .audio-card-inner,
-.audio-player-card:hover .audio-card-inner {
+.audio-player-card.expanded .audio-card-inner {
     display: flex;
     animation: expandCard 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.audio-player-card.expanded .audio-card-hint,
-.audio-player-card:hover .audio-card-hint {
+.audio-player-card.expanded .audio-card-hint {
     display: block;
     animation: hintWiggle 2s infinite ease-in-out;
 }
@@ -771,8 +799,15 @@ body {
         font-size: 0.74rem;
     }
     .audio-card-inner {
-        padding: 8px 12px;
+        padding: 8px 28px 8px 12px;
         gap: 8px;
+    }
+    .audio-collapse-btn {
+        top: 6px;
+        right: 6px;
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
     }
     .audio-disc {
         width: 42px;
